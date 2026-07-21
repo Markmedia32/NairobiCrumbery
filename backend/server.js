@@ -12,14 +12,29 @@ import supportRoutes from "./routes/support.js";
 
 
 const app = express();
-app.use(cors());
+const allowedOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Origin not allowed by CORS"));
+    },
+  })
+);
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Nairobi Crumbery API running" });
 });
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+const uploadRoot = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+app.use("/uploads", express.static(uploadRoot));
 app.use("/api/products", productRoutes);
 app.use("/api/orders", ordersRouter);
 app.use("/api/admin", adminRoutes);
