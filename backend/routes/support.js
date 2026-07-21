@@ -16,7 +16,17 @@ const mailer = nodemailer.createTransport({
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
+  family: 4,
+  connectionTimeout: 7000,
+  greetingTimeout: 7000,
+  socketTimeout: 10000,
 });
+
+function queueEmail(message) {
+  void mailer.sendMail(message).catch((error) => {
+    console.error("Background email failed:", error.message);
+  });
+}
 
 function createTicketCode() {
   const date = new Date();
@@ -84,7 +94,7 @@ router.post("/tickets", async (req, res) => {
     );
 
     try {
-      await mailer.sendMail({
+      queueEmail({
         from: `"Nairobi Crumbery Support" <${process.env.GMAIL_USER}>`,
         to: SUPPORT_EMAIL,
         subject: `Support request ${ticketCode}: ${category.trim()}`,

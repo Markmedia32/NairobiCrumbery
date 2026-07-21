@@ -22,7 +22,17 @@ const mailer = nodemailer.createTransport({
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
+  family: 4,
+  connectionTimeout: 7000,
+  greetingTimeout: 7000,
+  socketTimeout: 10000,
 });
+
+function queueEmail(message) {
+  void mailer.sendMail(message).catch((error) => {
+    console.error("Background email failed:", error.message);
+  });
+}
 
 mailer.verify((error) => {
   if (error) {
@@ -33,7 +43,8 @@ mailer.verify((error) => {
 });
 
 // File upload setup
-const uploadDir = path.join(process.cwd(), "uploads", "payment-proofs");
+const uploadRoot = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+const uploadDir = path.join(uploadRoot, "payment-proofs");
 fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -370,7 +381,7 @@ router.post("/", async (req, res) => {
 
     // Email sent to bakery owner
     try {
-      await mailer.sendMail({
+      queueEmail({
         from: `"Nairobi Crumbery Orders" <${process.env.GMAIL_USER}>`,
         to: OWNER_EMAIL,
         subject: `New Order ${orderCode} - KSh ${total.toLocaleString()}`,
@@ -439,7 +450,7 @@ router.post("/", async (req, res) => {
     // Confirmation email sent to customer
     if (customerEmail) {
       try {
-        await mailer.sendMail({
+        queueEmail({
           from: `"Nairobi Crumbery" <${process.env.GMAIL_USER}>`,
           to: customerEmail,
           subject: `We received your order ${orderCode}`,
@@ -637,7 +648,7 @@ router.post(
         `${backendUrl}/api/orders/${orderCode}/approve-payment?token=${token}`;
 
       try {
-        await mailer.sendMail({
+        queueEmail({
           from: `"Nairobi Crumbery Orders" <${process.env.GMAIL_USER}>`,
           to: OWNER_EMAIL,
           subject:
