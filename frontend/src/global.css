@@ -2497,7 +2497,7 @@ button { font: inherit; cursor: pointer; }
   }
 
   .order-summary {
-    order: -1;
+    order: 1;
   }
 
   .order-summary-sticky {
@@ -2586,7 +2586,7 @@ button { font: inherit; cursor: pointer; }
   border: 1px solid #e8d9c0;
   border-radius: 8px;
   padding: 12px 14px;
-  font-size: 15px;
+  font-size: 16px;
   color: #35170b;
   background: #fffaf1;
   outline: none;
@@ -4298,7 +4298,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--ink);
   background: #fffaf1;
   font: inherit;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .support-chat-input input:focus {
@@ -4386,7 +4386,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--ink);
   background: #fffaf1;
   font: inherit;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .support-form textarea {
