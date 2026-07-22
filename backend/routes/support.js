@@ -1,32 +1,11 @@
 import express from "express";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
 import pool from "../config/db.js";
+import { queueEmail, OWNER_EMAIL } from "./email.js";
 
 const router = express.Router();
 
-const SUPPORT_EMAIL =
-  process.env.SUPPORT_EMAIL ||
-  process.env.GMAIL_USER ||
-  "nairobicrumbery@gmail.com";
-
-const mailer = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-  family: 4,
-  connectionTimeout: 7000,
-  greetingTimeout: 7000,
-  socketTimeout: 10000,
-});
-
-function queueEmail(message) {
-  void mailer.sendMail(message).catch((error) => {
-    console.error("Background email failed:", error.message);
-  });
-}
+const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || OWNER_EMAIL;
 
 function createTicketCode() {
   const date = new Date();
@@ -95,7 +74,7 @@ router.post("/tickets", async (req, res) => {
 
     try {
       queueEmail({
-        from: `"Nairobi Crumbery Support" <${process.env.GMAIL_USER}>`,
+        from: "Nairobi Crumbery Support <orders@nairobicrumbery.co.ke>",
         to: SUPPORT_EMAIL,
         subject: `Support request ${ticketCode}: ${category.trim()}`,
         html: `
