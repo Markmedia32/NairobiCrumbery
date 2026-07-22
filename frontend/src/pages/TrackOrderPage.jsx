@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
@@ -29,6 +29,14 @@ function TrackOrderPage() {
   const [order, setOrder] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Scrolls to top once a tracking result loads, since the result card
+  // renders below the search form and would otherwise leave the user mid-page.
+  useEffect(() => {
+    if (order) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
+  }, [order]);
 
   async function handleSearch(event) {
     event.preventDefault();

@@ -5206,3 +5206,19 @@ button { font: inherit; cursor: pointer; }
     border-width: 5px;
   }
 }
+/* Prevent iOS zoom-on-focus: inputs must render at 16px or larger */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* If you want your visual/display size to stay smaller on desktop, 
+   scale it back down above mobile breakpoints only */
+@media (min-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 15px; /* or whatever your original desktop size was */
+  }
+}

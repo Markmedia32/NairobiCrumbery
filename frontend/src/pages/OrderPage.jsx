@@ -224,6 +224,12 @@ function OrderPage() {
     }
   }, [searchParams, appliedProduct]);
 
+  // Scrolls to top whenever the checkout stage changes (building -> payment -> done),
+  // since these are internal state swaps, not route changes, so ScrollToTop.jsx doesn't catch them.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [stage]);
+
   useEffect(() => {
     if (form.fulfillment !== "delivery" || form.address.trim().length < 5) {
       setDeliveryEstimate(null);
